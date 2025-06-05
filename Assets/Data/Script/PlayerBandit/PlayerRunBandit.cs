@@ -11,7 +11,7 @@ using static UnityEditor.Searcher.SearcherWindow.Alignment;
 //Скрипт перемещения 
 public class PlayerRunBandit : MonoBehaviour
 {
-    //Имена переменных
+    //Именование переменных
     private const string Horizontal = nameof(Horizontal);
     private const string Speed = nameof(Speed);
 
@@ -22,11 +22,10 @@ public class PlayerRunBandit : MonoBehaviour
     private CircleCollider2D _circleCollider;           //      
     private float _direction;                           // Направление персонажа
     private float _directionCircleCollider;             // Направление коллайдера сферы
-    private const float DistanceCircleCollider = 0.8f;  // Расстояние круга коллайдера
-
+    private const float DistanceCircleCollider = 0.8f;  // Расстояние от персонажа до круга коллайдера удара
 
     //Свойсво для Инспектора
-    [SerializeField] private float _speed;                  //Скорость персонажа
+    [SerializeField] private float _speed;                  // Скорость персонажа
     [SerializeField] private PlayerBandit _playerBandit;    // Объект главного класса персонажа
 
     private void Awake()
@@ -75,13 +74,13 @@ public class PlayerRunBandit : MonoBehaviour
         if (_direction > 0)
         {
             _spriteRenderer.flipX = true;
-            _directionCircleCollider = _rigidbody.velocity.x + DistanceCircleCollider;
+            _directionCircleCollider = _rigidbody.velocity.x + DistanceCircleCollider; // Перемещаем круг коллайдера удара согласно направления персонажа
             _circleCollider.offset = new Vector2(_directionCircleCollider, _circleCollider.offset.y);
         }
         else if (_direction < 0)
         {
             _spriteRenderer.flipX = false;
-            _directionCircleCollider = _rigidbody.velocity.x - DistanceCircleCollider;
+            _directionCircleCollider = _rigidbody.velocity.x - DistanceCircleCollider; // Перемещаем круг коллайдера удара согласно направления персонажа
             _circleCollider.offset = new Vector2(_directionCircleCollider, _circleCollider.offset.y);
         }
         else
@@ -90,6 +89,7 @@ public class PlayerRunBandit : MonoBehaviour
         }
     }
 
+    //Геттор направления персонажа
     public float GetDirection()
     { 
         return _direction;

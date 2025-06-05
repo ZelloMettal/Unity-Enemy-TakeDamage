@@ -1,16 +1,19 @@
-using UnityEngine;
+﻿using UnityEngine;
 
+//Подвязываем компоненты к скрипту
 [RequireComponent(typeof(Animator))]
 
+//скрипт противника
 public class Enemy : MonoBehaviour
 {
-    private const string Damage = nameof(Damage);
-    private Animator _animator;
-    private bool _isTakeDamage = false;
+    //Свойства скрипта
+    private const string Damage = nameof(Damage);   //Именование переменных
+    private Animator _animator;                     //Компонент аниматора
+    private bool _isTakeDamage = false;             //Состояние получение урона
 
     private void Awake()
     {
-        _animator = GetComponent<Animator>();
+        _animator = GetComponent<Animator>();       //Получаем компонент аниматора
     }
 
     private void Update()
@@ -18,6 +21,7 @@ public class Enemy : MonoBehaviour
         TakeDamage();
     }
 
+    //Метод обработки получения урона
     private void TakeDamage()
     {
         if (_isTakeDamage)
@@ -31,6 +35,7 @@ public class Enemy : MonoBehaviour
         }
     }
 
+    //Сеттер состояния получения урона
     public void SetTakeDamage()
     {
         _isTakeDamage = true;

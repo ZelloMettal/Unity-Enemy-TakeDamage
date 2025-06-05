@@ -1,20 +1,22 @@
 ﻿using System.Linq;
 using UnityEngine;
 
+//Подвязываем компоненты к скрипту
 [RequireComponent(typeof(Animator))]
 [RequireComponent(typeof(CircleCollider2D))]
 
 //Скрипт атаки
 public class PlayerAttackBandit : MonoBehaviour
 {
-    [SerializeField] private PlayerBandit _playerBandit;
-    [SerializeField] private PlayerRunBandit _playerRunBandit;
+
+    [SerializeField] private PlayerBandit _playerBandit;        // Объект главного класса персонажа
+    [SerializeField] private PlayerRunBandit _playerRunBandit;  // Объект класса перемещения персонажа
 
     //Свойства скрипта 
-    private const string Attack = nameof(Attack); // Параметр для аниматора    
-    private Animator _animator;                 // Компонент
-    private CircleCollider2D _circleCollider;   // 
-    private const float _radiusCircleCollider = 1.2f;
+    private const string Attack = nameof(Attack);       // Именование переменных  
+    private CircleCollider2D _circleCollider;           // Компонент
+    private Animator _animator;                         // 
+    private const float _radiusCircleCollider = 1.2f;   // Радиус круга триггера коллайдера
 
     private void Awake()
     {
@@ -23,7 +25,7 @@ public class PlayerAttackBandit : MonoBehaviour
         _playerBandit = GetComponent<PlayerBandit>();
         _animator = GetComponent<Animator>();
         _circleCollider = GetComponent<CircleCollider2D>();
-        _circleCollider.enabled = false;
+        _circleCollider.enabled = false;                // Отключаем коллайдер круга пока не будет совершон удар
     }
 
     void Update()
@@ -33,43 +35,47 @@ public class PlayerAttackBandit : MonoBehaviour
 
     //Метод удара
     private void Hit()
-    {
-        //Получаем состояние из родительского класса
-        bool isHit = _playerBandit.GetIsAttack();
-        float directionPlayer = _playerRunBandit.GetDirection();
-        float directionCircleCollider = 0f;
+    {        
+        bool isHit = _playerBandit.GetIsAttack();                   // Получаем состояние атаки из родительского класса
+        float directionPlayer = _playerRunBandit.GetDirection();    // Получаем получаем направление из класса перемещения
+        float directionCircleColliderX = 0f;                        // Х координата круга коллайдера атаки
 
         //Производим удар
         if (isHit)
         {
+            //Определяем направления круга коллайдера атаки
             if (directionPlayer > 0)            
-                directionCircleCollider = transform.position.x - _circleCollider.offset.x;            
+                directionCircleColliderX = transform.position.x - _circleCollider.offset.x;            
             else            
-                directionCircleCollider = transform.position.x + _circleCollider.offset.x;
+                directionCircleColliderX = transform.position.x + _circleCollider.offset.x;
 
-            Collider2D[] hits = Physics2D.OverlapCircleAll(new Vector2(directionCircleCollider, transform.position.y), _radiusCircleCollider);
-            _animator.SetBool(Attack, true);            
+            //Получаем массив коллайдеров с которыми пересёкся коллайдер атаки
+            Collider2D[] hits = Physics2D.OverlapCircleAll(new Vector2(directionCircleColliderX, transform.position.y), _radiusCircleCollider);
+            _animator.SetBool(Attack, true);    // Анимация атаки
+            
+            //Перебираем массив коллайдеров и ищем целевой коллайдер
             foreach (Collider2D target in hits)
             {
                 if (target.TryGetComponent<Enemy>(out Enemy enemy))
                 {                    
-                    enemy.SetTakeDamage();
+                    enemy.SetTakeDamage();  // Вызываем соответствующий метод получения урона у противника
                 }
             }
         }
         else 
         {
-            ColliderDisablee();
+            ColliderAttackDisable();
             _animator.SetBool(Attack, false);
         }     
     }
 
-    public void ColliderEnable()
+    //Метод включения коллайдера атаки
+    public void ColliderAttackEnable()
     {
         _circleCollider.enabled = true;
     }
-
-    public void ColliderDisablee()
+    //Метод отключения коллайдера атаки
+    public void ColliderAttackDisable()
     {
         _circleCollider.enabled = false;
     }
